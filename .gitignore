@@ -1,0 +1,10 @@
+# build dir
+build/
+
+# qt creator files
+*.user
+
+# qt autosave
+*.autosave
+
+
