@@ -17,6 +17,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_pushButton_sidebar_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
 };

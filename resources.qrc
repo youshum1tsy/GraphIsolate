@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>assets/icons/logo-light.png</file>
+        <file>assets/icons/quit-light.png</file>
+        <file>assets/icons/save-light.png</file>
+        <file>assets/icons/upload-light.png</file>
+        <file>assets/icons/create-light.png</file>
+    </qresource>
+</RCC>
