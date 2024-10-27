@@ -1,0 +1,18 @@
+# Игнорировать CMakeLists.txt при подсчете статистики языков
+CMakeLists.txt linguist-vendored
+
+# Считать .ui файлы как C++
+*.ui linguist-language=C++
+
+# Считать .qrc файлы как C++
+*.qrc linguist-language=C++
+
+# Считать файлы в директории assets как документацию
+assets/* linguist-documentation
+
+# Обрабатывать .txt файлы как текст
+*.txt text
+
+# Обрабатывать все исходные файлы с LF окончаниями строк
+*.cpp text eol=lf
+*.h text eol=lf
