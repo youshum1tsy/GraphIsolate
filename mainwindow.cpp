@@ -6,7 +6,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     ui->icon_name_widget->hide();
+    ui->pushButton_sidebar->setIcon(QIcon(":/icons/assets/icons/show.png"));
 }
 
 MainWindow::~MainWindow()
@@ -19,10 +21,12 @@ void MainWindow::on_pushButton_sidebar_toggled(bool checked)
     if (checked) {
         ui->icon_only_widget->hide();
         ui->icon_name_widget->show();
+        ui->pushButton_sidebar->setIcon(QIcon(":/icons/assets/icons/hide.png"));
     }
     else {
         ui->icon_name_widget->hide();
         ui->icon_only_widget->show();
+        ui->pushButton_sidebar->setIcon(QIcon(":/icons/assets/icons/show.png"));
     }
 }
 

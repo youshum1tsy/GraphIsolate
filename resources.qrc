@@ -5,5 +5,7 @@
         <file>assets/icons/save-light.png</file>
         <file>assets/icons/upload-light.png</file>
         <file>assets/icons/create-light.png</file>
+        <file>assets/icons/show.png</file>
+        <file>assets/icons/hide.png</file>
     </qresource>
 </RCC>
