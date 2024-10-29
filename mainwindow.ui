@@ -51,15 +51,8 @@ QPushButton {
 	padding-right: 10px;
 }</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="1" column="0">
-        <widget class="QGraphicsView" name="graphicsView">
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
         <widget class="QWidget" name="header_widget" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
@@ -214,6 +207,13 @@ QPushButton {
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGraphicsView" name="graphicsView">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
         </widget>
        </item>
       </layout>
