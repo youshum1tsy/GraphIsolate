@@ -32,6 +32,12 @@ public:
     void createVerteciesArray();
     void createEdgesArray();
 
+    void deleteAdjacencyGraph();
+    void deleteIncidenceGraph();
+
+    void deleteVerteciesArray();
+    void deleteEdgesArray();
+
     void drawGraph(QGraphicsScene *scene);
 
 private:

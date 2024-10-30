@@ -27,13 +27,20 @@
       <layout class="QHBoxLayout" name="horizontalLayout_edge">
        <item>
         <widget class="QSlider" name="horizontalSlider_edge">
+         <property name="maximum">
+          <number>20</number>
+         </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="spinBox_edge"/>
+        <widget class="QSpinBox" name="spinBox_edge">
+         <property name="maximum">
+          <number>20</number>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -41,7 +48,7 @@
    </item>
    <item row="2" column="0" colspan="2">
     <widget class="QWidget" name="widget" native="true">
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>210</x>
@@ -82,13 +89,26 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QSlider" name="horizontalSlider_vertex">
+         <property name="minimum">
+          <number>2</number>
+         </property>
+         <property name="maximum">
+          <number>20</number>
+         </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="spinBox_vertex"/>
+        <widget class="QSpinBox" name="spinBox_vertex">
+         <property name="minimum">
+          <number>2</number>
+         </property>
+         <property name="maximum">
+          <number>20</number>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>

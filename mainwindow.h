@@ -25,6 +25,8 @@ private slots:
     void on_pushButton_sidebar_toggled(bool checked);
     void on_pushButton_create_graph_clicked();
 
+    void on_pushButton_create_graph_icon_clicked();
+
 private:
     QGraphicsScene *scene;
     Graph graph;

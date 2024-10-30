@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete scene;
 }
 
 void MainWindow::on_pushButton_sidebar_toggled(bool checked)
@@ -40,11 +41,46 @@ void MainWindow::on_pushButton_sidebar_toggled(bool checked)
 void MainWindow::on_pushButton_create_graph_clicked()
 {
     scene->clear();
+    graph.deleteAdjacencyGraph();
+    graph.deleteIncidenceGraph();
+    graph.deleteVerteciesArray();
+    graph.deleteEdgesArray();
+
     DialogGraphSetting setting;
     if (setting.exec() == QDialog::Accepted) {
         int sliderVertexValue = setting.getSliderVertexValue();
         int sliderEdgeValue = setting.getSliderEdgeValue();
-        qDebug() << "v: " << sliderVertexValue << " e: " << sliderEdgeValue << '\n';
+        graph.setVertex(sliderVertexValue);
+        graph.setEdges(sliderEdgeValue);
     }
+    graph.createAdjacencyGraph();
+    graph.createIncidenceGraph();
+    graph.createVerteciesArray();
+    graph.createEdgesArray();
+    graph.drawGraph(scene);
+
+}
+
+
+void MainWindow::on_pushButton_create_graph_icon_clicked()
+{
+    scene->clear();
+    graph.deleteAdjacencyGraph();
+    graph.deleteIncidenceGraph();
+    graph.deleteVerteciesArray();
+    graph.deleteEdgesArray();
+
+    DialogGraphSetting setting;
+    if (setting.exec() == QDialog::Accepted) {
+        int sliderVertexValue = setting.getSliderVertexValue();
+        int sliderEdgeValue = setting.getSliderEdgeValue();
+        graph.setVertex(sliderVertexValue);
+        graph.setEdges(sliderEdgeValue);
+    }
+    graph.createAdjacencyGraph();
+    graph.createIncidenceGraph();
+    graph.createVerteciesArray();
+    graph.createEdgesArray();
+    graph.drawGraph(scene);
 }
 
