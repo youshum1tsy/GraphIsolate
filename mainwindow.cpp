@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include "dialoggraphsetting.h"
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -37,7 +39,12 @@ void MainWindow::on_pushButton_sidebar_toggled(bool checked)
 
 void MainWindow::on_pushButton_create_graph_clicked()
 {
-
     scene->clear();
+    DialogGraphSetting setting;
+    if (setting.exec() == QDialog::Accepted) {
+        int sliderVertexValue = setting.getSliderVertexValue();
+        int sliderEdgeValue = setting.getSliderEdgeValue();
+        qDebug() << "v: " << sliderVertexValue << " e: " << sliderEdgeValue << '\n';
+    }
 }
 
