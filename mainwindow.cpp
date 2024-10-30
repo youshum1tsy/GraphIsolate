@@ -9,6 +9,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->icon_name_widget->hide();
     ui->pushButton_sidebar->setIcon(QIcon(":/icons/assets/icons/show.png"));
+
+    scene = new QGraphicsScene(this);
+    scene->setSceneRect(0, 0, 10000, 10000);
+
+    ui->graphicsView->setScene(scene);
 }
 
 MainWindow::~MainWindow()
@@ -30,6 +35,9 @@ void MainWindow::on_pushButton_sidebar_toggled(bool checked)
     }
 }
 
+void MainWindow::on_pushButton_create_graph_clicked()
+{
 
-
+    scene->clear();
+}
 

@@ -1,7 +1,14 @@
 #include "graph.h"
 #include <iostream>
+#include <QGraphicsItem>
+Graph::Graph() {
 
-Graph::Graph() {}
+}
+
+Graph::~Graph()
+{
+
+}
 
 void Graph::setVertex(int vertex)
 {
@@ -63,6 +70,7 @@ void Graph::createVerteciesArray()
         double angle = 2 * M_PI * v / vertexAmount;
         double x = radius * cos(angle);
         double y = radius * sin(angle);
+        //std::cout << x << " " << y << std::endl;
         vertex.coordinates.setX(x);
         vertex.coordinates.setY(y);
         vertecies.push_back(vertex);
@@ -89,6 +97,19 @@ void Graph::createEdgesArray()
             edges.push_back(edge);
         }
     }
+}
+
+void Graph::drawGraph(QGraphicsScene *scene)
+{
+    for (Vertex vertex : vertecies) {
+        vertex.ellipse = new QGraphicsEllipseItem(vertex.coordinates.x(), vertex.coordinates.y() , 30, 30);
+        vertex.ellipse->setBrush(QBrush(Qt::green));
+        vertex.ellipse->setPen(QPen(Qt::black, 2));
+        scene->addItem(vertex.ellipse);
+    }
+    //node->textItem = new QGraphicsTextItem(QString::number(node->data));
+    //node->textItem->setPos(x - 10, y - 10);
+    //scene->addItem(node->textItem);
 }
 
 

@@ -32,6 +32,8 @@ public:
     void createVerteciesArray();
     void createEdgesArray();
 
+    void drawGraph(QGraphicsScene *scene);
+
 private:
     int** adjacencyMatrix;
     int** incidenceMatrix;
