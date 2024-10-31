@@ -27,6 +27,9 @@
       <layout class="QHBoxLayout" name="horizontalLayout_edge">
        <item>
         <widget class="QSlider" name="horizontalSlider_edge">
+         <property name="minimum">
+          <number>1</number>
+         </property>
          <property name="maximum">
           <number>20</number>
          </property>
@@ -37,6 +40,9 @@
        </item>
        <item>
         <widget class="QSpinBox" name="spinBox_edge">
+         <property name="minimum">
+          <number>1</number>
+         </property>
          <property name="maximum">
           <number>20</number>
          </property>

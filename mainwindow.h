@@ -27,6 +27,8 @@ private slots:
 
     void on_pushButton_create_graph_icon_clicked();
 
+    void on_pushButton_clear_all_clicked();
+
 private:
     QGraphicsScene *scene;
     Graph graph;

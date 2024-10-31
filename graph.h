@@ -49,7 +49,7 @@ private:
     int radius = 500;
 
     int vertexAmount;
-    int edgesAmount; // при вызове не давать пользователю ввести больше вершин чем vertex * (vertex - 1) / 2
+    int edgesAmount;
 };
 
 

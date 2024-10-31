@@ -18,6 +18,8 @@ public:
     int getSliderVertexValue();
     int getSliderEdgeValue();
 
+    void setSliderMaxValue(int value);
+
 private slots:
 
     void on_pushButton_accept_clicked();

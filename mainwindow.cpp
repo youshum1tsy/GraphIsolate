@@ -84,3 +84,13 @@ void MainWindow::on_pushButton_create_graph_icon_clicked()
     graph.drawGraph(scene);
 }
 
+
+void MainWindow::on_pushButton_clear_all_clicked()
+{
+    scene->clear();
+    graph.deleteAdjacencyGraph();
+    graph.deleteIncidenceGraph();
+    graph.deleteVerteciesArray();
+    graph.deleteEdgesArray();
+}
+

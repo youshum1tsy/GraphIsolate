@@ -11,6 +11,7 @@ DialogGraphSetting::DialogGraphSetting(QWidget *parent)
     connect(ui->horizontalSlider_edge,&QSlider::valueChanged,ui->spinBox_edge,&QSpinBox::setValue);
     connect(ui->spinBox_edge,&QSpinBox::valueChanged,ui->horizontalSlider_edge,&QSlider::setValue);
 
+    connect(ui->horizontalSlider_vertex, &QSlider::valueChanged, this, &DialogGraphSetting::setSliderMaxValue);
 }
 
 DialogGraphSetting::~DialogGraphSetting()
@@ -37,5 +38,13 @@ int DialogGraphSetting::getSliderVertexValue()
 int DialogGraphSetting::getSliderEdgeValue()
 {
     return ui->horizontalSlider_edge->value();
+}
+
+void DialogGraphSetting::setSliderMaxValue(int value)
+{
+    int newMax = value * (value - 1) / 2;
+
+    ui->horizontalSlider_edge->setRange(1, newMax);
+    ui->spinBox_edge->setRange(1, newMax);
 }
 
