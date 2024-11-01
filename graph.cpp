@@ -1,6 +1,15 @@
-#include "graph.h"
 #include <QDebug>
 #include <QGraphicsItem>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
+
+#include <QFile>
+#include <QFileDialog>
+
+#include <QRegularExpression>
+
+#include "graph.h"
 
 Graph::Graph() : vertexAmount(0), edgesAmount(0), adjacencyMatrix(nullptr), incidenceMatrix(nullptr) {
 
@@ -152,9 +161,77 @@ void Graph::drawGraph(QGraphicsScene *scene)
         edge.line->setPen(QPen(Qt::black, 2));
         scene->addItem(edge.line);
     }
-    //node->textItem = new QGraphicsTextItem(QString::number(node->data));
-    //node->textItem->setPos(x - 10, y - 10);
-    //scene->addItem(node->textItem);
+}
+
+void Graph::saveAdjacencyMatrixToJson(const QString& filename)
+{
+    static const QRegularExpression reSpace("\\s+(?=\\d)");
+    static const QRegularExpression reBracket("\\s+\\]");
+    static const QRegularExpression reDoubleBracket("\\]\\]");
+
+    QJsonObject json;
+    QJsonArray data;
+    for (int i = 0; i < vertexAmount; i++) {
+        QJsonArray jsonRow;
+        for (int j = 0; j < vertexAmount; j++) {
+            jsonRow.append(adjacencyMatrix[i][j]);
+        }
+        data.append(jsonRow);
+    }
+    json["data"] = data;
+
+    QJsonDocument doc(json);
+    QFile file(filename);
+    if (file.open(QIODevice::WriteOnly)) {
+        QString jsonString = "{\n";
+
+        jsonString += QString("    \"vertex\": %1,\n").arg(vertexAmount);
+        jsonString += QString("    \"edges\": %1,").arg(edgesAmount);
+        jsonString += QString::fromUtf8(doc.toJson()).mid(1);
+
+        jsonString.replace(reSpace, "");
+        jsonString.replace(reBracket, "]");
+        jsonString.replace(reDoubleBracket, "]\n    ]");
+
+        file.write(jsonString.toUtf8());
+        file.close();
+    }
+}
+
+void Graph::saveIncidenceMatrixToJson(const QString &filename)
+{
+    static const QRegularExpression reSpace("\\s+(?=\\d)");
+    static const QRegularExpression reBracket("\\s+\\]");
+    static const QRegularExpression reDoubleBracket("\\]\\]");
+
+    QJsonObject json;
+    QJsonArray data;
+
+    for (int vertex = 0; vertex < vertexAmount; vertex++) {
+        QJsonArray jsonRow;
+        for (int edje = 0; edje < edgesAmount; edje++) {
+            jsonRow.append(incidenceMatrix[vertex][edje]);
+        }
+        data.append(jsonRow);
+    }
+    json["data"] = data;
+
+    QJsonDocument doc(json);
+    QFile file(filename);
+    if (file.open(QIODevice::WriteOnly)) {
+        QString jsonString = "{\n";
+
+        jsonString += QString("    \"vertex\": %1,\n").arg(vertexAmount);
+        jsonString += QString("    \"edges\": %1,").arg(edgesAmount);
+        jsonString += QString::fromUtf8(doc.toJson()).mid(1);
+
+        jsonString.replace(reSpace, "");
+        jsonString.replace(reBracket, "]");
+        jsonString.replace(reDoubleBracket, "]\n    ]");
+
+        file.write(jsonString.toUtf8());
+        file.close();
+    }
 }
 
 

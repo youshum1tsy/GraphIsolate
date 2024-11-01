@@ -1,7 +1,10 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include "dialoggraphsetting.h"
+#include "dialogsavematrix.h"
+
 #include <QDebug>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -46,10 +49,10 @@ void MainWindow::on_pushButton_create_graph_clicked()
     graph.deleteVerteciesArray();
     graph.deleteEdgesArray();
 
-    DialogGraphSetting setting;
-    if (setting.exec() == QDialog::Accepted) {
-        int sliderVertexValue = setting.getSliderVertexValue();
-        int sliderEdgeValue = setting.getSliderEdgeValue();
+    DialogGraphSetting dialogSetting;
+    if (dialogSetting.exec() == QDialog::Accepted) {
+        int sliderVertexValue = dialogSetting.getSliderVertexValue();
+        int sliderEdgeValue = dialogSetting.getSliderEdgeValue();
         graph.setVertex(sliderVertexValue);
         graph.setEdges(sliderEdgeValue);
     }
@@ -93,4 +96,42 @@ void MainWindow::on_pushButton_clear_all_clicked()
     graph.deleteVerteciesArray();
     graph.deleteEdgesArray();
 }
+
+
+void MainWindow::on_pushButton_save_clicked()
+{
+    DialogSaveMatrix saveDialog;
+
+    if (saveDialog.exec() == QDialog::Accepted) {
+
+        if (saveDialog.getCheckBoxAdjacencyStatus() && saveDialog.getCheckBoxIncidenceStatus()) {
+            QString fileName = getJsonFileName("Adjacency");
+            graph.saveAdjacencyMatrixToJson(fileName);
+
+            fileName = getJsonFileName("Incidence");
+            graph.saveIncidenceMatrixToJson(fileName);
+        }
+        else if (saveDialog.getCheckBoxAdjacencyStatus()) {
+            QString fileName = getJsonFileName("Adjacency");
+            graph.saveAdjacencyMatrixToJson(fileName);
+        }
+        else if (saveDialog.getCheckBoxIncidenceStatus()) {
+            QString fileName = getJsonFileName("Incidence");
+            graph.saveIncidenceMatrixToJson(fileName);
+        }
+    }
+}
+
+QString MainWindow::getJsonFileName(const QString name)
+{
+    QString projectPath = QCoreApplication::applicationDirPath();
+    projectPath = QDir(projectPath).absolutePath() + "/../../";
+
+    QString fileName = QFileDialog::getSaveFileName(this, "Save JSON File", projectPath + "/" + name + ".json", tr("JSON Files (*.json)"));
+    if (!fileName.endsWith(".json") && !fileName.isEmpty()) {
+        fileName += ".json";
+    }
+    return fileName;
+}
+
 

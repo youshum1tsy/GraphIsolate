@@ -40,6 +40,9 @@ public:
 
     void drawGraph(QGraphicsScene *scene);
 
+    void saveAdjacencyMatrixToJson(const QString& filename);
+    void saveIncidenceMatrixToJson(const QString& filename);
+
 private:
     int** adjacencyMatrix;
     int** incidenceMatrix;

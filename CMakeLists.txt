@@ -26,6 +26,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         resources.qrc
         graph.h graph.cpp
         dialoggraphsetting.h dialoggraphsetting.cpp dialoggraphsetting.ui
+        dialogsavematrix.h dialogsavematrix.cpp dialogsavematrix.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Graphsolate APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
