@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 #include "dialoggraphsetting.h"
 #include "dialogsavematrix.h"
+#include "dialoguploadmatrix.h"
 
 #include <QDebug>
 #include <QFileDialog>
@@ -98,7 +99,7 @@ void MainWindow::on_pushButton_clear_all_clicked()
 }
 
 
-void MainWindow::on_pushButton_save_clicked()
+void MainWindow::on_pushButton_save_graph_clicked()
 {
     DialogSaveMatrix saveDialog;
 
@@ -134,4 +135,41 @@ QString MainWindow::getJsonFileName(const QString name)
     return fileName;
 }
 
+QString MainWindow::getJsonFilePath()
+{
+    QString projectPath = QCoreApplication::applicationDirPath();
+    projectPath = QDir(projectPath).absolutePath() + "/../../";
+
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    "Open JSON file",
+                                                    projectPath,
+                                                    tr("JSON Files (*.json);;All Files (*)"));
+    return fileName;
+}
+
+
+void MainWindow::on_pushButton_upload_graph_clicked()
+{
+    DialogUploadMatrix uploadDialog;
+
+    if (uploadDialog.exec() == QDialog::Accepted) {
+        if (uploadDialog.getRadioButtonAdjacencyStatus()) {
+            QString filePath = getJsonFilePath();
+            graph.uploadJsonToAdjacencyMatrix(filePath);
+            scene->clear();
+            graph.createIncidenceGraph();
+            graph.createVerteciesArray();
+            graph.createEdgesArray();
+            graph.drawGraph(scene);
+        }
+        else if (uploadDialog.getRadioButtonIncidenceStatus()) {
+            QString filePath = getJsonFilePath();
+            graph.uploadJsonToIncidenceMatrix(filePath);
+            scene->clear();
+            graph.createVerteciesArray();
+            graph.createEdgesArray();
+            graph.drawGraph(scene);
+        }
+    }
+}
 

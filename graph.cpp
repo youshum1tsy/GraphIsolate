@@ -163,7 +163,7 @@ void Graph::drawGraph(QGraphicsScene *scene)
     }
 }
 
-void Graph::saveAdjacencyMatrixToJson(const QString& filename)
+void Graph::saveAdjacencyMatrixToJson(const QString& fileName)
 {
     static const QRegularExpression reSpace("\\s+(?=\\d)");
     static const QRegularExpression reBracket("\\s+\\]");
@@ -181,7 +181,7 @@ void Graph::saveAdjacencyMatrixToJson(const QString& filename)
     json["data"] = data;
 
     QJsonDocument doc(json);
-    QFile file(filename);
+    QFile file(fileName);
     if (file.open(QIODevice::WriteOnly)) {
         QString jsonString = "{\n";
 
@@ -198,7 +198,7 @@ void Graph::saveAdjacencyMatrixToJson(const QString& filename)
     }
 }
 
-void Graph::saveIncidenceMatrixToJson(const QString &filename)
+void Graph::saveIncidenceMatrixToJson(const QString &fileName)
 {
     static const QRegularExpression reSpace("\\s+(?=\\d)");
     static const QRegularExpression reBracket("\\s+\\]");
@@ -217,7 +217,7 @@ void Graph::saveIncidenceMatrixToJson(const QString &filename)
     json["data"] = data;
 
     QJsonDocument doc(json);
-    QFile file(filename);
+    QFile file(fileName);
     if (file.open(QIODevice::WriteOnly)) {
         QString jsonString = "{\n";
 
@@ -231,6 +231,152 @@ void Graph::saveIncidenceMatrixToJson(const QString &filename)
 
         file.write(jsonString.toUtf8());
         file.close();
+    }
+}
+
+void Graph::uploadJsonToAdjacencyMatrix(const QString &filePath)
+{
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "Cannot open file:" << file.errorString();
+        return;
+    }
+
+    QByteArray jsonData = file.readAll();
+    file.close();
+
+    QJsonDocument document = QJsonDocument::fromJson(jsonData);
+    if (!document.isObject()) {
+        qDebug() << "JSON is not an object";
+        return;
+    }
+
+    QJsonObject jsonObject = document.object();
+    if (!jsonObject.contains("vertex") ||
+        !jsonObject.contains("edges") ||
+        !jsonObject.contains("data")) {
+        qDebug() << "Missing required keys";
+        return;
+    }
+
+    vertexAmount = jsonObject["vertex"].toInt();
+    edgesAmount = jsonObject["edges"].toInt();
+
+    deleteAdjacencyGraph();
+
+    adjacencyMatrix = (int**) malloc(sizeof(int*) * vertexAmount);
+    for (int i = 0; i < vertexAmount; i++) {
+        adjacencyMatrix[i] = (int*) calloc(vertexAmount, sizeof(int));
+    }
+
+    QJsonArray matrixArray = jsonObject["data"].toArray();
+
+    if (matrixArray.size() != vertexAmount) {
+        qDebug() << "Matrix size does not match vertex count";
+        return;
+    }
+
+    for (int i = 0; i < vertexAmount; i++) {
+        QJsonArray rowArray = matrixArray[i].toArray();
+        if (rowArray.size() != vertexAmount) {
+            qDebug() << "Row size does not match vertex count";
+            return;
+        }
+        for (int j = i; j < vertexAmount; j++) {
+            int value = rowArray[j].toInt();
+
+            if (value != 0 && value != 1) {
+                qDebug() << "Matrix elements must be 0 or 1";
+                return;
+            }
+
+            if (i == j) {
+                if (value != 0) {
+                    qDebug() << "Diagonal elements must be 0";
+                    return;
+                }
+            } else {
+                int symmetricValue = matrixArray[j].toArray()[i].toInt();
+                if (value != symmetricValue) {
+                    qDebug() << "Matrix is not symmetric";
+                    return;
+                }
+            }
+
+            adjacencyMatrix[i][j] = value;
+
+            if (i != j) {
+                adjacencyMatrix[j][i] = value;
+            }
+        }
+    }
+}
+
+void Graph::uploadJsonToIncidenceMatrix(const QString &filePath)
+{
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "Cannot open file:" << file.errorString();
+        return;
+    }
+
+    QByteArray jsonData = file.readAll();
+    file.close();
+
+    QJsonDocument document = QJsonDocument::fromJson(jsonData);
+    if (!document.isObject()) {
+        qDebug() << "JSON is not an object";
+        return;
+    }
+
+    QJsonObject jsonObject = document.object();
+    if (!jsonObject.contains("vertex") ||
+        !jsonObject.contains("edges") ||
+        !jsonObject.contains("data")) {
+        qDebug() << "Missing required keys";
+        return;
+    }
+
+    vertexAmount = jsonObject["vertex"].toInt();
+    edgesAmount = jsonObject["edges"].toInt();
+
+    deleteIncidenceGraph();
+
+    incidenceMatrix = (int**) malloc(sizeof(int*) * vertexAmount);
+    for (int i = 0; i < vertexAmount; i++) {
+        incidenceMatrix[i] = (int*) calloc(vertexAmount, sizeof(int));
+    }
+
+    QJsonArray matrixArray = jsonObject["data"].toArray();
+
+    if (matrixArray.size() != vertexAmount) {
+        qDebug() << "Matrix size does not match vertex count";
+        return;
+    }
+
+    int edgeSum = 0;
+
+    for (int i = 0; i < vertexAmount; i++) {
+        QJsonArray rowArray = matrixArray[i].toArray();
+        if (rowArray.size() != edgesAmount) {
+            qDebug() << "Row size does not match edges count";
+            return;
+        }
+        for (int j = 0; j < edgesAmount; j++) {
+            int value = rowArray[j].toInt();
+
+            if (value != 0 && value != 1) {
+                qDebug() << "Matrix elements must be 0 or 1";
+                return;
+            }
+
+            incidenceMatrix[i][j] = value;
+            edgeSum += value;
+        }
+    }
+    if (edgeSum != edgesAmount * 2) {
+        qDebug() << "Invalid incidence matrix: incorrect number of connections";
+        return;
     }
 }
 

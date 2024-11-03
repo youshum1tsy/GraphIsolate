@@ -29,9 +29,12 @@ private slots:
 
     void on_pushButton_clear_all_clicked();
 
-    void on_pushButton_save_clicked();
+    void on_pushButton_save_graph_clicked();
 
     QString getJsonFileName(const QString name);
+    QString getJsonFilePath();
+
+    void on_pushButton_upload_graph_clicked();
 
 private:
     QGraphicsScene *scene;
