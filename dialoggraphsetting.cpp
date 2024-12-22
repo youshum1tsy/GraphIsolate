@@ -19,17 +19,6 @@ DialogGraphSetting::~DialogGraphSetting()
     delete ui;
 }
 
-void DialogGraphSetting::on_pushButton_accept_clicked()
-{
-    accept();
-}
-
-
-void DialogGraphSetting::on_pushButton_cancel_clicked()
-{
-    reject();
-}
-
 int DialogGraphSetting::getSliderVertexValue()
 {
     return ui->horizontalSlider_vertex->value();
@@ -46,5 +35,15 @@ void DialogGraphSetting::setSliderMaxValue(int value)
 
     ui->horizontalSlider_edge->setRange(1, newMax);
     ui->spinBox_edge->setRange(1, newMax);
+}
+
+void DialogGraphSetting::on_pushButton_accept_clicked()
+{
+    accept();
+}
+
+void DialogGraphSetting::on_pushButton_cancel_clicked()
+{
+    reject();
 }
 

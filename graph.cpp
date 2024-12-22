@@ -3,12 +3,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonDocument>
-
-#include <QFile>
 #include <QFileDialog>
-
 #include <QRegularExpression>
-
 #include "graph.h"
 
 Graph::Graph() : vertexAmount(0), edgesAmount(0), adjacencyMatrix(nullptr), incidenceMatrix(nullptr) {
@@ -17,10 +13,7 @@ Graph::Graph() : vertexAmount(0), edgesAmount(0), adjacencyMatrix(nullptr), inci
 
 Graph::~Graph()
 {
-    deleteAdjacencyGraph();
-    deleteIncidenceGraph();
-    deleteVerteciesArray();
-    deleteEdgesArray();
+    clear();
 }
 
 void Graph::setVertex(int vertex)
@@ -28,11 +21,71 @@ void Graph::setVertex(int vertex)
     this->vertexAmount = vertex;
 }
 
+void Graph::createVerteciesArray()
+{
+    for (int v = 0; v < vertexAmount; v++) {
+        Vertex vertex;
+        vertex.index = v;
+        double angle = 2 * M_PI * v / vertexAmount;
+        double x = 5000 + radius * cos(angle);
+        double y = 5000 + radius * sin(angle);
+        vertex.coordinates.setX(x);
+        vertex.coordinates.setY(y);
+        vertecies.push_back(vertex);
+    }
+}
+
+void Graph::deleteVerteciesArray()
+{
+    vertecies.clear();
+}
+
+
 void Graph::setEdges(int edges)
 {
     this->edgesAmount = edges;
 }
 
+void Graph::createEdgesArray()
+{
+    for (int e = 0; e < edgesAmount; e++) {
+        Edge edge;
+        int count = 0;
+        for (int v = 0; v < vertexAmount; v++) {
+            if (incidenceMatrix[v][e] == 1) {
+                if (count == 0) {
+                    edge.startX = vertecies[v].coordinates.x();
+                    edge.startY = vertecies[v].coordinates.y();
+                    count++;
+                }
+                else {
+                    edge.endX = vertecies[v].coordinates.x();
+                    edge.endY = vertecies[v].coordinates.y();
+                }
+            }
+        }
+        edges.push_back(edge);
+    }
+}
+
+void Graph::deleteEdgesArray()
+{
+    edges.clear();
+}
+
+void Graph::setEdgeColor(int edgeIndex, const QColor& color)
+{
+    edges[edgeIndex].line->setPen(QPen(color));
+}
+
+void Graph::setAllEdgeColorBlack()
+{
+    for (Edge edge : edges) {
+        edge.line->setPen(QPen(Qt::black));
+    }
+}
+
+// исправить что главная диагональ всегда 0
 void Graph::createAdjacencyGraph()
 {
     adjacencyMatrix = (int**)malloc(vertexAmount * sizeof(int*));
@@ -74,42 +127,6 @@ void Graph::createIncidenceGraph()
     }
 }
 
-void Graph::createVerteciesArray()
-{
-    for (int v = 0; v < vertexAmount; v++) {
-        Vertex vertex;
-        vertex.index = v;
-        double angle = 2 * M_PI * v / vertexAmount;
-        double x = 5000 + radius * cos(angle);
-        double y = 5000 + radius * sin(angle);
-        vertex.coordinates.setX(x);
-        vertex.coordinates.setY(y);
-        vertecies.push_back(vertex);
-    }
-}
-
-void Graph::createEdgesArray()
-{
-    for (int e = 0; e < edgesAmount; e++) {
-        Edge edge;
-        int count = 0;
-        for (int v = 0; v < vertexAmount; v++) {
-            if (incidenceMatrix[v][e] == 1) {
-                if (count == 0) {
-                    edge.startX = vertecies[v].coordinates.x();
-                    edge.startY = vertecies[v].coordinates.y();
-                    count++;
-                }
-                else {
-                    edge.endX = vertecies[v].coordinates.x();
-                    edge.endY = vertecies[v].coordinates.y();
-                }
-            }
-        }
-        edges.push_back(edge);
-    }
-}
-
 void Graph::deleteAdjacencyGraph()
 {
     if (adjacencyMatrix != nullptr) {
@@ -133,16 +150,6 @@ void Graph::deleteIncidenceGraph()
     }
 }
 
-void Graph::deleteVerteciesArray()
-{
-    vertecies.clear();
-}
-
-void Graph::deleteEdgesArray()
-{
-    edges.clear();
-}
-
 void Graph::drawGraph(QGraphicsScene *scene)
 {
     scene->clear();
@@ -155,13 +162,37 @@ void Graph::drawGraph(QGraphicsScene *scene)
         scene->addItem(vertex.ellipse);
     }
 
-    for (Edge edge : edges) {
+    for (int i = 0; i < edges.size(); ++i) {
+        Edge& edge = edges[i];
         edge.line = new QGraphicsLineItem(edge.startX, edge.startY, edge.endX, edge.endY);
-        qDebug() << edge.startX << " " << edge.startY << " | "<< edge.endX << " " << edge.endY;
         edge.line->setPen(QPen(Qt::black, 2));
         scene->addItem(edge.line);
+
+        QGraphicsTextItem* edgeNumberText = new QGraphicsTextItem(QString::number(i));
+
+        qreal midX = edge.startX + 0.25 * (edge.endX - edge.startX);
+        qreal midY = edge.startY + 0.25 * (edge.endY - edge.startY);
+
+        edgeNumberText->setPos(midX, midY);
+        edgeNumberText->setDefaultTextColor(Qt::black);
+
+        QFont font = edgeNumberText->font();
+        font.setPointSize(12);
+        edgeNumberText->setFont(font);
+
+        scene->addItem(edgeNumberText);
     }
 }
+
+void Graph::clear()
+{
+    deleteAdjacencyGraph();
+    deleteIncidenceGraph();
+    deleteVerteciesArray();
+    deleteEdgesArray();
+    deleteIndependentSet();
+}
+
 
 void Graph::saveAdjacencyMatrixToJson(const QString& fileName)
 {
@@ -233,7 +264,7 @@ void Graph::saveIncidenceMatrixToJson(const QString &fileName)
         file.close();
     }
 }
-
+// обработать ошибки через QMessageBox;
 void Graph::uploadJsonToAdjacencyMatrix(const QString &filePath)
 {
     QFile file(filePath);
@@ -381,5 +412,80 @@ void Graph::uploadJsonToIncidenceMatrix(const QString &filePath)
 }
 
 
+void Graph::setIndependentSet(std::vector<std::vector<int>> set)
+{
+    independentSet = set;
+}
 
+std::vector<int> Graph::getIndependentItemSet(int index)
+{
+    return independentSet[index];
+}
+
+void Graph::deleteIndependentSet()
+{
+    for (std::vector<int> set : independentSet) {
+        set.clear();
+    }
+    independentSet.clear();
+}
+
+
+std::vector<std::vector<int>> Graph::findAllIndependentEdgeSets(QListWidget* listEdgesSet)
+{
+    std::vector<std::vector<int>> allSets;
+    std::vector<int> currentSet;
+    std::vector<bool> used(edgesAmount, false);
+
+    findIndependentEdgeSetsRecursive(0, currentSet, used, allSets);
+
+    // Обновляем QListWidget
+    listEdgesSet->clear();
+    for (const auto& set : allSets) {
+        QString setStr;
+        for (int edge : set) {
+            setStr += QString::number(edge) + " ";
+        }
+        listEdgesSet->addItem(setStr);
+    }
+
+    return allSets;
+}
+
+void Graph::markAdjacentEdges(int edgeIndex, std::vector<bool>& used)
+{
+    used[edgeIndex] = true;
+    for (int i = 0; i < vertexAmount; i++) {
+        if (incidenceMatrix[i][edgeIndex] != 0) {
+            for (int j = 0; j < edgesAmount; j++) {
+                if (incidenceMatrix[i][j] != 0) {
+                    used[j] = true;
+                }
+            }
+        }
+    }
+}
+
+void Graph::findIndependentEdgeSetsRecursive(int edge, std::vector<int>& currentSet, std::vector<bool>& used, std::vector<std::vector<int>>& allSets)
+{
+    // Добавляем текущее множество в результат
+    if (currentSet.size() > 1) {
+        allSets.push_back(currentSet);
+    }
+
+    for (int i = edge; i < edgesAmount; i++) {
+        if (!used[i]) {
+            // Пробуем добавить ребро i
+            currentSet.push_back(i);
+            std::vector<bool> newUsed = used;
+            markAdjacentEdges(i, newUsed);
+
+            // Рекурсивно ищем дальше
+            findIndependentEdgeSetsRecursive(i + 1, currentSet, newUsed, allSets);
+
+            // Убираем ребро i (backtracking)
+            currentSet.pop_back();
+        }
+    }
+}
 

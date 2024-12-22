@@ -5,7 +5,9 @@
 #include "dialoguploadmatrix.h"
 
 #include <QDebug>
+#include <QDir>
 #include <QFileDialog>
+#include <QGraphicsLineItem>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -42,13 +44,81 @@ void MainWindow::on_pushButton_sidebar_toggled(bool checked)
     }
 }
 
+
 void MainWindow::on_pushButton_create_graph_clicked()
 {
+    createAndDrawGraph();
+}
+
+void MainWindow::on_pushButton_create_graph_icon_clicked()
+{
+    createAndDrawGraph();
+}
+
+
+void MainWindow::on_pushButton_clear_all_clicked()
+{
     scene->clear();
-    graph.deleteAdjacencyGraph();
-    graph.deleteIncidenceGraph();
-    graph.deleteVerteciesArray();
-    graph.deleteEdgesArray();
+    graph.clear();
+    ui->listEdgesSet->clear();
+}
+
+
+void MainWindow::on_pushButton_save_graph_clicked()
+{
+    saveGraph();
+}
+
+void MainWindow::on_pushButton_save_icon_clicked()
+{
+    saveGraph();
+}
+
+
+void MainWindow::on_pushButton_upload_graph_clicked()
+{
+    uploadGraph();
+}
+
+void MainWindow::on_pushButton_upload_graph_icon_clicked()
+{
+    uploadGraph();
+}
+
+
+void MainWindow::on_pushButton_mis_clicked()
+{
+    std::vector<std::vector<int>> independentSet = graph.findAllIndependentEdgeSets(ui->listEdgesSet);
+    graph.setIndependentSet(independentSet);
+}
+
+
+void MainWindow::on_listEdgesSet_itemClicked(QListWidgetItem *item)
+{
+    graph.setAllEdgeColorBlack();
+    int selectedIndex = ui->listEdgesSet->row(item);
+    std::vector<int> selectedEdgeSet = graph.getIndependentItemSet(selectedIndex);
+    for (int edge : selectedEdgeSet) {
+        graph.setEdgeColor(edge, Qt::red);
+    }
+}
+
+
+void MainWindow::on_pushButton_quit_clicked()
+{
+    QApplication::quit();
+}
+
+void MainWindow::on_pushButton_quit_icon_clicked()
+{
+    QApplication::quit();
+}
+
+
+void MainWindow::createAndDrawGraph()
+{
+    scene->clear();
+    graph.clear();
 
     DialogGraphSetting dialogSetting;
     if (dialogSetting.exec() == QDialog::Accepted) {
@@ -62,44 +132,9 @@ void MainWindow::on_pushButton_create_graph_clicked()
     graph.createVerteciesArray();
     graph.createEdgesArray();
     graph.drawGraph(scene);
-
 }
 
-
-void MainWindow::on_pushButton_create_graph_icon_clicked()
-{
-    scene->clear();
-    graph.deleteAdjacencyGraph();
-    graph.deleteIncidenceGraph();
-    graph.deleteVerteciesArray();
-    graph.deleteEdgesArray();
-
-    DialogGraphSetting setting;
-    if (setting.exec() == QDialog::Accepted) {
-        int sliderVertexValue = setting.getSliderVertexValue();
-        int sliderEdgeValue = setting.getSliderEdgeValue();
-        graph.setVertex(sliderVertexValue);
-        graph.setEdges(sliderEdgeValue);
-    }
-    graph.createAdjacencyGraph();
-    graph.createIncidenceGraph();
-    graph.createVerteciesArray();
-    graph.createEdgesArray();
-    graph.drawGraph(scene);
-}
-
-
-void MainWindow::on_pushButton_clear_all_clicked()
-{
-    scene->clear();
-    graph.deleteAdjacencyGraph();
-    graph.deleteIncidenceGraph();
-    graph.deleteVerteciesArray();
-    graph.deleteEdgesArray();
-}
-
-
-void MainWindow::on_pushButton_save_graph_clicked()
+void MainWindow::saveGraph()
 {
     DialogSaveMatrix saveDialog;
 
@@ -122,6 +157,30 @@ void MainWindow::on_pushButton_save_graph_clicked()
         }
     }
 }
+
+void MainWindow::uploadGraph() {
+    DialogUploadMatrix uploadDialog;
+
+    if (uploadDialog.exec() == QDialog::Accepted) {
+        if (uploadDialog.getRadioButtonAdjacencyStatus()) {
+            QString filePath = getJsonFilePath();
+            graph.uploadJsonToAdjacencyMatrix(filePath);
+            scene->clear();
+            graph.createIncidenceGraph();
+            graph.createVerteciesArray();
+            graph.createEdgesArray();
+            graph.drawGraph(scene);
+        }
+        else if (uploadDialog.getRadioButtonIncidenceStatus()) {
+            QString filePath = getJsonFilePath();
+            graph.uploadJsonToIncidenceMatrix(filePath);
+            scene->clear();
+            graph.createVerteciesArray();
+            graph.createEdgesArray();
+            graph.drawGraph(scene);
+        }
+    }
+};
 
 QString MainWindow::getJsonFileName(const QString name)
 {
@@ -148,28 +207,4 @@ QString MainWindow::getJsonFilePath()
 }
 
 
-void MainWindow::on_pushButton_upload_graph_clicked()
-{
-    DialogUploadMatrix uploadDialog;
-
-    if (uploadDialog.exec() == QDialog::Accepted) {
-        if (uploadDialog.getRadioButtonAdjacencyStatus()) {
-            QString filePath = getJsonFilePath();
-            graph.uploadJsonToAdjacencyMatrix(filePath);
-            scene->clear();
-            graph.createIncidenceGraph();
-            graph.createVerteciesArray();
-            graph.createEdgesArray();
-            graph.drawGraph(scene);
-        }
-        else if (uploadDialog.getRadioButtonIncidenceStatus()) {
-            QString filePath = getJsonFilePath();
-            graph.uploadJsonToIncidenceMatrix(filePath);
-            scene->clear();
-            graph.createVerteciesArray();
-            graph.createEdgesArray();
-            graph.drawGraph(scene);
-        }
-    }
-}
 

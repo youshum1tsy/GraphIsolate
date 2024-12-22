@@ -28,7 +28,6 @@ void DialogUploadMatrix::on_pushButton_cancel_clicked()
     reject();
 }
 
-
 void DialogUploadMatrix::on_pushButton_next_clicked()
 {
     accept();
