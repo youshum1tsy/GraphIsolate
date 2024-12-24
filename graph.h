@@ -13,6 +13,8 @@ struct Vertex {
 
 struct Edge {
     QGraphicsLineItem* line;
+    QGraphicsEllipseItem* arc;
+    bool loop;
     double startX;
     double startY;
     double endX;
@@ -44,10 +46,12 @@ public:
 
     void saveAdjacencyMatrixToJson(const QString& fileName);
     void saveIncidenceMatrixToJson(const QString& fileName);
-    void uploadJsonToAdjacencyMatrix(const QString& filePath);
-    void uploadJsonToIncidenceMatrix(const QString& filePath);
+    void saveIndependentSetToJson(const QString &fileName);
+    bool uploadJsonToAdjacencyMatrix(const QString& filePath);
+    bool uploadJsonToIncidenceMatrix(const QString& filePath);
 
     void setIndependentSet(std::vector<std::vector<int>> set);
+    void loadIndependentSets(const QString &filePath, QListWidget* listEdgesSet);
     std::vector<int> getIndependentItemSet(int index);
     void deleteIndependentSet();
 

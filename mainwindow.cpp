@@ -119,6 +119,7 @@ void MainWindow::createAndDrawGraph()
 {
     scene->clear();
     graph.clear();
+    ui->listEdgesSet->clear();
 
     DialogGraphSetting dialogSetting;
     if (dialogSetting.exec() == QDialog::Accepted) {
@@ -126,12 +127,12 @@ void MainWindow::createAndDrawGraph()
         int sliderEdgeValue = dialogSetting.getSliderEdgeValue();
         graph.setVertex(sliderVertexValue);
         graph.setEdges(sliderEdgeValue);
+        graph.createAdjacencyGraph();
+        graph.createIncidenceGraph();
+        graph.createVerteciesArray();
+        graph.createEdgesArray();
+        graph.drawGraph(scene);
     }
-    graph.createAdjacencyGraph();
-    graph.createIncidenceGraph();
-    graph.createVerteciesArray();
-    graph.createEdgesArray();
-    graph.drawGraph(scene);
 }
 
 void MainWindow::saveGraph()
@@ -164,20 +165,24 @@ void MainWindow::uploadGraph() {
     if (uploadDialog.exec() == QDialog::Accepted) {
         if (uploadDialog.getRadioButtonAdjacencyStatus()) {
             QString filePath = getJsonFilePath();
-            graph.uploadJsonToAdjacencyMatrix(filePath);
-            scene->clear();
-            graph.createIncidenceGraph();
-            graph.createVerteciesArray();
-            graph.createEdgesArray();
-            graph.drawGraph(scene);
+            if (graph.uploadJsonToAdjacencyMatrix(filePath)) {
+                graph.loadIndependentSets(filePath, ui->listEdgesSet);
+                scene->clear();
+                graph.createIncidenceGraph();
+                graph.createVerteciesArray();
+                graph.createEdgesArray();
+                graph.drawGraph(scene);
+            }
         }
         else if (uploadDialog.getRadioButtonIncidenceStatus()) {
             QString filePath = getJsonFilePath();
-            graph.uploadJsonToIncidenceMatrix(filePath);
-            scene->clear();
-            graph.createVerteciesArray();
-            graph.createEdgesArray();
-            graph.drawGraph(scene);
+            if (graph.uploadJsonToIncidenceMatrix(filePath)) {
+                graph.loadIndependentSets(filePath, ui->listEdgesSet);
+                scene->clear();
+                graph.createVerteciesArray();
+                graph.createEdgesArray();
+                graph.drawGraph(scene);
+            }
         }
     }
 };
@@ -199,10 +204,7 @@ QString MainWindow::getJsonFilePath()
     QString projectPath = QCoreApplication::applicationDirPath();
     projectPath = QDir(projectPath).absolutePath() + "/../../";
 
-    QString fileName = QFileDialog::getOpenFileName(this,
-                                                    "Open JSON file",
-                                                    projectPath,
-                                                    tr("JSON Files (*.json);;All Files (*)"));
+    QString fileName = QFileDialog::getOpenFileName(this, "Open JSON file", projectPath, tr("JSON Files (*.json);;All Files (*)"));
     return fileName;
 }
 
